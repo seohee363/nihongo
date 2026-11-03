@@ -75,10 +75,11 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .tc small { font-size: 12px; }
 .x { width: 44px; height: 44px; font-size: 20px; text-align: left; color: var(--fg); }
 .study { display: flex; flex-direction: column; min-height: calc(100svh - 40px); }
-.stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 12px 0; min-width: 0; }
+.stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 12px; padding: 2svh 0 12px; min-width: 0; }
 .no { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
 .word { font-weight: 500; line-height: 1.2; max-width: 100%; word-break: keep-all; cursor: pointer; color: var(--kc, var(--fg)); }
-.card { background: var(--card); border-radius: 16px; padding: 14px 12px 16px; width: 100%; aspect-ratio: 5 / 4; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; }
+.card .no { position: absolute; top: 12px; left: 14px; }
+.card { position: relative; background: var(--card); border-radius: 16px; padding: 14px 12px 16px; width: 100%; aspect-ratio: 5 / 4; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; }
 .card .r { font-size: 22px; height: 34px; line-height: 34px; }
 .card .m { font-size: 19px; height: 30px; line-height: 30px; color: var(--mute); }
 .ex { color: var(--mute); font-size: 17px; max-width: 24em; margin-top: 20px; }
@@ -265,8 +266,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function wsize(w) { var len = Math.max(1, w.length), cap = len <= 3 ? 72 : len <= 5 ? 60 : 48; return "min(" + cap + "px, " + (76 / len).toFixed(1) + "vw)"; }
   function vStudy() {
     var ss = S.ses[K(R)], idx = ss.q[ss.i], x = W[idx];
-    return '<div class="study"><div class="top"><span class="tl"><button class="x" data-a="home" aria-label="' + L().list + '">✕</button><span class="no">' + (idx + 1) + '</span></span><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
-      '<div class="stage"><div class="card"><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kspan(x[3]) + "</div></div>" +
+    return '<div class="study"><div class="top"><span class="tl"><button class="x" data-a="home" aria-label="' + L().list + '">✕</button></span><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
+      '<div class="stage"><div class="card"><span class="no">' + (idx + 1) + '</span><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kspan(x[3]) + "</div></div>" +
       '<div class="btns"><button data-a="m">' + L().meaning + '</button><button data-a="r">' + L().hira + '</button><button data-a="no">' + L().no + '</button><button class="yes" data-a="yes">' + L().yes + '</button></div></div>';
   }
   function vFin() {
