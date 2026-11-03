@@ -38,7 +38,11 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .wrap { max-width: 480px; margin: 0 auto; min-width: 0; }
 .brand { font-size: 30px; font-weight: 700; letter-spacing: .01em; margin: 6px 0 0; }
 .title { font-size: 14px; color: var(--mute); margin: 2px 0 12px; }
-.set { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding: 0 2px; }
+.hd { display: flex; justify-content: space-between; align-items: flex-start; }
+.gear { width: 44px; height: 44px; margin-right: -10px; font-size: 24px; color: var(--mute); }
+.sheet.pop { align-items: center; padding: 0 16px; }
+.sheet.pop .kc { border-radius: 16px; max-width: 360px; }
+.set { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 8px; padding: 0 2px; }
 .set .sl { color: var(--mute); font-size: 14px; }
 .sw { display: flex; gap: 12px; align-items: center; }
 .swb { position: relative; width: 28px; height: 28px; border-radius: 50%; flex: none; }
@@ -199,7 +203,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 
   /* ---------- 화면 ---------- */
   var finInfo = { pass: 1 };
-  var view = "home", R = 0, showR = false, showM = false, sheet = null, timeOpen = 0;
+  var view = "home", R = 0, showR = false, showM = false, sheet = null, timeOpen = 0, settingsOpen = false;
   var lastAct = Date.now(), lastTick = Date.now(), tickN = 0;
   var app = document.getElementById("app");
 
@@ -221,11 +225,15 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
         '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + r2 + '周目 勉強時間">⏱</button></div>';
     }
     var tip = sync === "ok" ? "同期済み" : sync === "err" ? "同期失敗・この端末に保存" : "この端末に保存";
+    return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">N1単語 ' + N + '</div></div><button class="gear" data-a="settings" aria-label="設定">⚙</button></div>' +
+      '<div class="car" id="car">' + boxes + '</div><div class="note">' + tip + "</div>";
+  }
+  function vSettings() {
     var sw = SWATCH.map(function (v) {
       return '<button class="swb' + (S.kc === v ? " on" : "") + '" data-a="kc" data-v="' + v + '" style="background:' + (v || "var(--fg)") + '" aria-label="漢字の色"></button>';
     }).join("") + '<label class="swb cust' + (S.kc && SWATCH.indexOf(S.kc) < 0 ? " on" : "") + '"><input type="color" data-a="kcol" value="' + (S.kc || "#111111") + '" aria-label="漢字の色を選ぶ"></label>';
-    return '<div class="brand">회독JLPT</div><div class="title">N1単語 ' + N + '</div><div class="car" id="car">' + boxes + '</div>' +
-      '<div class="set"><span class="sl">漢字の色</span><div class="sw">' + sw + '</div></div><div class="note">' + tip + "</div>";
+    return '<div class="sheet pop" data-a="sclose"><div class="kc" role="dialog" aria-label="設定"><div class="kh"><div class="ko">設定</div><button class="cl" data-a="sclose" aria-label="閉じる">✕</button></div>' +
+      '<div class="set"><span class="sl">漢字の色</span><div class="sw">' + sw + "</div></div></div></div>";
   }
   function wsize(w) { var len = Math.max(1, w.length), cap = len <= 3 ? 72 : len <= 5 ? 60 : 48; return "min(" + cap + "px, " + (76 / len).toFixed(1) + "vw)"; }
   function vStudy() {
@@ -255,7 +263,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function render() {
     applyColor();
     var c0 = document.getElementById("car"), keep = view === "home" && c0 ? c0.scrollLeft : null;
-    app.innerHTML = (view === "home" ? vHome() : view === "study" ? vStudy() : vFin()) + (sheet ? vSheet() : "");
+    app.innerHTML = (view === "home" ? vHome() : view === "study" ? vStudy() : vFin()) + (sheet ? vSheet() : "") + (settingsOpen ? vSettings() : "");
     if (view === "home") {
       var car = document.getElementById("car"), cur = car && car.querySelector(".cur");
       var place = function () {
@@ -318,6 +326,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       if (ss0 && ss0.ms) { var t0 = S.tm[K(+v)] || (S.tm[K(+v)] = { tot: 0, runs: [] }); t0.tot += ss0.ms; }
       delete S.ses[K(+v)]; save(); render();
     }
+    else if (a === "settings") { settingsOpen = true; render(); }
+    else if (a === "sclose") { if (el.classList.contains("sheet") && e.target !== el) return; settingsOpen = false; render(); }
     else if (a === "time") { timeOpen = timeOpen === +v ? 0 : +v; render(); }
     else if (a === "kc") { S.kc = v; save(); render(); }
     else if (a === "home") { view = "home"; sheet = null; render(); }
@@ -328,6 +338,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     else if (a === "no") advance(false);
   });
   document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && settingsOpen) { settingsOpen = false; render(); return; }
     if (view !== "study" || sheet) { if (sheet && e.key === "Escape") { sheet = null; render(); } return; }
     if (e.key === "1") { showM = !showM; render(); }
     else if (e.key === "2") { showR = !showR; render(); }
