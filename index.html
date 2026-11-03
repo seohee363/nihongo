@@ -243,9 +243,9 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
         (ss ? '<button class="rs" data-a="reset" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().reset + '">↺</button>' : "") +
         '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().time + '">⏱</button></div>';
     }
-    var tip = sync === "ok" ? L().synced : sync === "err" ? L().syncErr : L().local;
+    var tip = sync === "err" ? L().syncErr : "";
     return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">' + L().sub + " " + N + '</div></div><button class="gear" data-a="settings" aria-label="' + L().set + '">⚙</button></div>' +
-      '<div class="car" id="car">' + boxes + '</div><div class="note">' + tip + "</div>";
+      '<div class="car" id="car">' + boxes + "</div>" + (tip ? '<div class="note">' + tip + "</div>" : "");
   }
   function vSettings() {
     var sw = SWATCH.map(function (v) {
