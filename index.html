@@ -45,6 +45,9 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .set { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 8px; padding: 0 2px; }
 .set .sl { color: var(--mute); font-size: 14px; }
 .sw { display: flex; gap: 12px; align-items: center; }
+.lg { display: flex; gap: 8px; }
+.lgb { min-height: 40px; padding: 0 18px; border-radius: 10px; background: var(--bg); color: var(--fg); font-size: 15px; }
+.lgb.on { background: var(--fg); color: var(--bg); }
 .swb { position: relative; width: 28px; height: 28px; border-radius: 50%; flex: none; }
 .swb.on { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--fg); }
 .swb.cust { background: conic-gradient(#D6453D, #E07B00, #1E9E63, #2F6FDE, #8A4FD6, #D6453D); }
@@ -142,13 +145,29 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function oldKey(r) { var b = Math.floor((r - 1) / 6), s = ((r - 1) % 6) + 1; return (b * 300 + 1) + "-" + Math.min(N, b * 300 + s * 50); }
   function mig(o) { var out = {}; for (var k in (o || {})) out[/^\d+$/.test(k) ? oldKey(+k) : k] = o[k]; return out; }
 
+  /* ---------- 표시 언어 (설정에서 한국어/일본어 선택) ---------- */
+  var I18N = {
+    ja: { round: "周目", sub: "N1単語", set: "設定", kcolor: "漢字の色", pick: "漢字の色を選ぶ", lang: "言語", close: "閉じる", list: "一覧",
+      synced: "同期済み", syncErr: "同期失敗・この端末に保存", local: "この端末に保存", meaning: "意味", hira: "ひらがな", no: "知らない", yes: "知ってる",
+      done: "完了", start: "開始", total: "累計", reset: "最初から", time: "勉強時間", stroke: "画", order: "筆順", anim: "筆順アニメーション", replay: "筆順をもう一度",
+      more: function (n) { return "他" + n + "語"; } },
+    ko: { round: "회독", sub: "N1 단어", set: "설정", kcolor: "한자 색상", pick: "한자 색상 고르기", lang: "언어", close: "닫기", list: "목록",
+      synced: "동기화됨", syncErr: "동기화 실패 · 이 기기에 저장됨", local: "이 기기에 저장됨", meaning: "뜻", hira: "히라가나", no: "모름", yes: "앎",
+      done: "완료", start: "시작", total: "누적", reset: "처음부터", time: "공부 시간", stroke: "획", order: "획순", anim: "획순 애니메이션", replay: "획순 다시 재생",
+      more: function (n) { return "외 " + n + "개"; } }
+  };
+  function L() { return I18N[S.lang === "ko" ? "ko" : "ja"]; }
+  function rl(n) { return n + L().round; }
+  function passS(n) { return S.lang === "ko" ? "반복" + n + " " : n + "巡 "; }
+  function passN(n) { return S.lang === "ko" ? "반복 " + n : n + "巡目"; }
+
   /* ---------- 상태 저장 ---------- */
   var LS = "n1words-v1";
-  function fresh() { return { v: 1, t: 0, done: {}, ses: {}, last: "", kc: "", tm: {} }; }
+  function fresh() { return { v: 1, t: 0, done: {}, ses: {}, last: "", kc: "", tm: {}, lang: "ja" }; }
   function norm(s) {
     var f = fresh(); if (!s || typeof s !== "object") return f;
     f.t = +s.t || 0; f.done = mig(s.done); f.ses = mig(s.ses); f.last = typeof s.last === "string" ? s.last : "";
-    f.kc = typeof s.kc === "string" ? s.kc : ""; f.tm = s.tm && typeof s.tm === "object" ? s.tm : {};
+    f.kc = typeof s.kc === "string" ? s.kc : ""; f.lang = s.lang === "ko" ? "ko" : "ja"; f.tm = s.tm && typeof s.tm === "object" ? s.tm : {};
     return f;
   }
   var S = fresh();
@@ -215,36 +234,37 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     for (var r2 = 1; r2 <= RL.length; r2++) {
       var g = RL[r2 - 1], ss = S.ses[K(r2)], st = "", tm = S.tm[K(r2)];
       if (timeOpen === r2) {
-        st = '<span class="bt">累計 ' + fmt((tm ? tm.tot : 0) + (ss ? ss.ms || 0 : 0)) + "</span>" +
-          (tm && tm.runs && tm.runs.length ? tm.runs.slice(-2).map(function (ms) { return '<span class="bt">完了 ' + fmt(ms) + "</span>"; }).join("") : "");
+        st = '<span class="bt">' + L().total + " " + fmt((tm ? tm.tot : 0) + (ss ? ss.ms || 0 : 0)) + "</span>" +
+          (tm && tm.runs && tm.runs.length ? tm.runs.slice(-2).map(function (ms) { return '<span class="bt">' + L().done + " " + fmt(ms) + "</span>"; }).join("") : "");
       }
-      else if (ss) st = (ss.pass > 1 ? ss.pass + "巡 " : "") + ss.i + "/" + ss.q.length;
+      else if (ss) st = (ss.pass > 1 ? passS(ss.pass) : "") + ss.i + "/" + ss.q.length;
       else if (S.done[K(r2)]) st = "✓";
-      boxes += '<div class="bx' + (r2 === curN ? " cur" : "") + (S.done[K(r2)] && !ss ? " dn" : "") + '"><button class="bb" data-a="start" data-v="' + r2 + '"><span class="br">' + g[0] + "–" + g[1] + '</span><span class="bn">' + r2 + '周目</span><span class="bs">' + st + "</span></button>" +
-        (ss ? '<button class="rs" data-a="reset" data-v="' + r2 + '" aria-label="' + r2 + '周目 最初から">↺</button>' : "") +
-        '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + r2 + '周目 勉強時間">⏱</button></div>';
+      boxes += '<div class="bx' + (r2 === curN ? " cur" : "") + (S.done[K(r2)] && !ss ? " dn" : "") + '"><button class="bb" data-a="start" data-v="' + r2 + '"><span class="br">' + g[0] + "–" + g[1] + '</span><span class="bn">' + rl(r2) + '</span><span class="bs">' + st + "</span></button>" +
+        (ss ? '<button class="rs" data-a="reset" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().reset + '">↺</button>' : "") +
+        '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().time + '">⏱</button></div>';
     }
-    var tip = sync === "ok" ? "同期済み" : sync === "err" ? "同期失敗・この端末に保存" : "この端末に保存";
-    return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">N1単語 ' + N + '</div></div><button class="gear" data-a="settings" aria-label="設定">⚙</button></div>' +
+    var tip = sync === "ok" ? L().synced : sync === "err" ? L().syncErr : L().local;
+    return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">' + L().sub + " " + N + '</div></div><button class="gear" data-a="settings" aria-label="' + L().set + '">⚙</button></div>' +
       '<div class="car" id="car">' + boxes + '</div><div class="note">' + tip + "</div>";
   }
   function vSettings() {
     var sw = SWATCH.map(function (v) {
-      return '<button class="swb' + (S.kc === v ? " on" : "") + '" data-a="kc" data-v="' + v + '" style="background:' + (v || "var(--fg)") + '" aria-label="漢字の色"></button>';
-    }).join("") + '<label class="swb cust' + (S.kc && SWATCH.indexOf(S.kc) < 0 ? " on" : "") + '"><input type="color" data-a="kcol" value="' + (S.kc || "#111111") + '" aria-label="漢字の色を選ぶ"></label>';
-    return '<div class="sheet pop" data-a="sclose"><div class="kc" role="dialog" aria-label="設定"><div class="kh"><div class="ko">設定</div><button class="cl" data-a="sclose" aria-label="閉じる">✕</button></div>' +
-      '<div class="set"><span class="sl">漢字の色</span><div class="sw">' + sw + "</div></div></div></div>";
+      return '<button class="swb' + (S.kc === v ? " on" : "") + '" data-a="kc" data-v="' + v + '" style="background:' + (v || "var(--fg)") + '" aria-label="' + L().kcolor + '"></button>';
+    }).join("") + '<label class="swb cust' + (S.kc && SWATCH.indexOf(S.kc) < 0 ? " on" : "") + '"><input type="color" data-a="kcol" value="' + (S.kc || "#111111") + '" aria-label="' + L().pick + '"></label>';
+    return '<div class="sheet pop" data-a="sclose"><div class="kc" role="dialog" aria-label="' + L().set + '"><div class="kh"><div class="ko">' + L().set + '</div><button class="cl" data-a="sclose" aria-label="' + L().close + '">✕</button></div>' +
+      '<div class="set"><span class="sl">' + L().kcolor + '</span><div class="sw">' + sw + "</div></div>" +
+      '<div class="set"><span class="sl">' + L().lang + '</span><div class="lg"><button class="lgb' + (S.lang !== "ko" ? " on" : "") + '" data-a="lang" data-v="ja">日本語</button><button class="lgb' + (S.lang === "ko" ? " on" : "") + '" data-a="lang" data-v="ko">한국어</button></div></div></div></div>';
   }
   function wsize(w) { var len = Math.max(1, w.length), cap = len <= 3 ? 72 : len <= 5 ? 60 : 48; return "min(" + cap + "px, " + (76 / len).toFixed(1) + "vw)"; }
   function vStudy() {
     var ss = S.ses[K(R)], idx = ss.q[ss.i], x = W[idx];
-    return '<div class="study"><div class="top"><button class="x" data-a="home" aria-label="목록">✕</button><span class="tc"><span>' + R + "周目" + (ss.pass > 1 ? " · " + ss.pass + "巡目" : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
+    return '<div class="study"><div class="top"><button class="x" data-a="home" aria-label="' + L().list + '">✕</button><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
       '<div class="stage"><div class="no">' + (idx + 1) + '</div><div class="card"><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kspan(x[3]) + "</div></div>" +
-      '<div class="btns"><button data-a="m">意味</button><button data-a="r">ひらがな</button><button data-a="no">知らない</button><button class="yes" data-a="yes">知ってる</button></div></div>';
+      '<div class="btns"><button data-a="m">' + L().meaning + '</button><button data-a="r">' + L().hira + '</button><button data-a="no">' + L().no + '</button><button class="yes" data-a="yes">' + L().yes + '</button></div></div>';
   }
   function vFin() {
     var nx = R < RL.length ? R + 1 : 0;
-    return '<div class="fin"><div class="big">' + R + "周目 完了</div><div class=\"fsub\">" + RL[R - 1][0] + "–" + RL[R - 1][1] + (finInfo.pass > 1 ? " · " + finInfo.pass + "巡" : "") + " · " + fmt(finInfo.ms) + "</div>" + (nx ? '<button data-a="start" data-v="' + nx + '">' + nx + "周目 開始</button>" : "") + '<button data-a="home">一覧</button></div>';
+    return '<div class="fin"><div class="big">' + rl(R) + " " + L().done + "</div><div class=\"fsub\">" + RL[R - 1][0] + "–" + RL[R - 1][1] + (finInfo.pass > 1 ? " · " + passN(finInfo.pass) : "") + " · " + fmt(finInfo.ms) + "</div>" + (nx ? '<button data-a="start" data-v="' + nx + '">' + rl(nx) + " " + L().start + "</button>" : "") + '<button data-a="home">' + L().list + "</button></div>";
   }
   function vSheet() {
     var c = sheet, ds = ST[c], ko = KO[c] || "";
@@ -252,13 +272,13 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     if (ds) {
       var gp = "", ap = "";
       for (var q = 0; q < ds.length; q++) { gp += '<path class="a0" pathLength="1" d="' + ds[q] + '"/>'; ap += '<path class="a1" pathLength="1" d="' + ds[q] + '"/>'; }
-      an = '<div class="animw"><svg id="anim" class="anim" viewBox="0 0 109 109" role="img" aria-label="筆順アニメーション">' + gp + ap + '</svg><button class="rp" data-a="play" aria-label="筆順をもう一度">↻</button></div>';
+      an = '<div class="animw"><svg id="anim" class="anim" viewBox="0 0 109 109" role="img" aria-label="' + L().anim + '">' + gp + ap + '</svg><button class="rp" data-a="play" aria-label="' + L().replay + '">↻</button></div>';
     }
     var cur = S.ses[K(R)] ? S.ses[K(R)].q[S.ses[K(R)].i] : -1, list = (kmap[c] || []).filter(function (i) { return i !== cur; });
     var li = list.slice(0, 12).map(function (i) { var x = W[i]; return '<li><span class="wb"><span class="w">' + esc(x[0]) + '</span><span class="r">' + esc(x[1]) + '</span></span><span class="m">' + esc(x[2]) + "</span></li>"; }).join("");
-    return '<div class="sheet" data-a="close"><div class="kc" role="dialog" aria-label="한자 카드"><div class="kh">' + an + '<div class="ko">' + esc(ko) + '<div class="sub">' + (ds ? ds.length + "画" : "") + '</div></div><button class="cl" data-a="close" aria-label="닫기">✕</button></div>' +
+    return '<div class="sheet" data-a="close"><div class="kc" role="dialog" aria-label="한자 카드"><div class="kh">' + an + '<div class="ko">' + esc(ko) + '<div class="sub">' + (ds ? ds.length + L().stroke : "") + '</div></div><button class="cl" data-a="close" aria-label="' + L().close + '">✕</button></div>' +
       (li ? '<ul class="oth">' + li + "</ul>" : "") +
-      (list.length > 12 ? '<div class="cr">他' + (list.length - 12) + "語</div>" : "") + '<div class="cr">筆順: KanjiVG (CC BY-SA 3.0)</div></div></div>';
+      (list.length > 12 ? '<div class="cr">' + L().more(list.length - 12) + "</div>" : "") + '<div class="cr">' + L().order + ': KanjiVG (CC BY-SA 3.0)</div></div></div>';
   }
   function render() {
     applyColor();
@@ -326,6 +346,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       if (ss0 && ss0.ms) { var t0 = S.tm[K(+v)] || (S.tm[K(+v)] = { tot: 0, runs: [] }); t0.tot += ss0.ms; }
       delete S.ses[K(+v)]; save(); render();
     }
+    else if (a === "lang") { S.lang = v === "ko" ? "ko" : "ja"; save(); render(); }
     else if (a === "settings") { settingsOpen = true; render(); }
     else if (a === "sclose") { if (el.classList.contains("sheet") && e.target !== el) return; settingsOpen = false; render(); }
     else if (a === "time") { timeOpen = timeOpen === +v ? 0 : +v; render(); }
