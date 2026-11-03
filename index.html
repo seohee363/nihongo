@@ -69,6 +69,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .note { color: var(--mute); font-size: 12px; margin-top: 14px; }
 
 .top { display: flex; justify-content: space-between; align-items: center; color: var(--mute); font-size: 14px; min-height: 44px; font-variant-numeric: tabular-nums; }
+.tl { display: flex; align-items: center; gap: 2px; min-width: 96px; }
+.top > span:last-child { min-width: 96px; text-align: right; }
 .tc { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
 .tc small { font-size: 12px; }
 .x { width: 44px; height: 44px; font-size: 20px; text-align: left; color: var(--fg); }
@@ -263,8 +265,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function wsize(w) { var len = Math.max(1, w.length), cap = len <= 3 ? 72 : len <= 5 ? 60 : 48; return "min(" + cap + "px, " + (76 / len).toFixed(1) + "vw)"; }
   function vStudy() {
     var ss = S.ses[K(R)], idx = ss.q[ss.i], x = W[idx];
-    return '<div class="study"><div class="top"><button class="x" data-a="home" aria-label="' + L().list + '">✕</button><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
-      '<div class="stage"><div class="no">' + (idx + 1) + '</div><div class="card"><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kspan(x[3]) + "</div></div>" +
+    return '<div class="study"><div class="top"><span class="tl"><button class="x" data-a="home" aria-label="' + L().list + '">✕</button><span class="no">' + (idx + 1) + '</span></span><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
+      '<div class="stage"><div class="card"><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kspan(x[3]) + "</div></div>" +
       '<div class="btns"><button data-a="m">' + L().meaning + '</button><button data-a="r">' + L().hira + '</button><button data-a="no">' + L().no + '</button><button class="yes" data-a="yes">' + L().yes + '</button></div></div>';
   }
   function vFin() {
