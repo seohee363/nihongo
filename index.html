@@ -6,14 +6,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style>
-<title>N1 단어 1800</title>
+<title>회독JLPT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: plain list of rounds; one centered word card with four buttons at the bottom; kanji sheet slides over. */
 :root {
-  --bg: #FFFFFF;
+  --bg: #F3F3F3;
+  --card: #FFFFFF;
   --fg: #111111;
   --mute: #767676;
   --line: #DCDCDC;
@@ -21,9 +22,9 @@
   --f: "Noto Sans JP", "Noto Sans KR", "Hiragino Sans", "Yu Gothic", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg: #0E0E0E; --fg: #EDEDED; --mute: #8C8C8C; --line: #2C2C2C; --faint: #4A4A4A; color-scheme: dark; }
+  :root:not([data-theme="light"]) { --bg: #0E0E0E; --card: #1B1B1B; --fg: #EDEDED; --mute: #8C8C8C; --line: #2C2C2C; --faint: #4A4A4A; color-scheme: dark; }
 }
-:root[data-theme="dark"] { --bg: #0E0E0E; --fg: #EDEDED; --mute: #8C8C8C; --line: #2C2C2C; --faint: #4A4A4A; color-scheme: dark; }
+:root[data-theme="dark"] { --bg: #0E0E0E; --card: #1B1B1B; --fg: #EDEDED; --mute: #8C8C8C; --line: #2C2C2C; --faint: #4A4A4A; color-scheme: dark; }
 * { box-sizing: border-box; }
 body {
   background: var(--bg); color: var(--fg); font: 400 16px/1.5 var(--f);
@@ -35,32 +36,44 @@ body {
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .wrap { max-width: 480px; margin: 0 auto; min-width: 0; }
-.title { font-size: 15px; color: var(--mute); margin: 4px 0 12px; }
+.brand { font-size: 30px; font-weight: 700; letter-spacing: .01em; margin: 6px 0 0; }
+.title { font-size: 14px; color: var(--mute); margin: 2px 0 12px; }
+.set { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding: 0 2px; }
+.set .sl { color: var(--mute); font-size: 14px; }
+.sw { display: flex; gap: 12px; align-items: center; }
+.swb { position: relative; width: 28px; height: 28px; border-radius: 50%; flex: none; }
+.swb.on { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--fg); }
+.swb.cust { background: conic-gradient(#D6453D, #E07B00, #1E9E63, #2F6FDE, #8A4FD6, #D6453D); }
+.swb.cust input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .car { position: relative; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 8px calc(50% - 60px); margin-top: 8vh; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .car::-webkit-scrollbar { display: none; }
-.bx { position: relative; flex: 0 0 120px; height: 136px; border: 1px solid var(--line); border-radius: 12px; scroll-snap-align: center; }
+.bx { position: relative; flex: 0 0 120px; height: 136px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; scroll-snap-align: center; }
 .bx.cur { border: 2px solid var(--fg); }
 .bx.dn .bn, .bx.dn .br { color: var(--mute); }
 .bb { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; border-radius: 12px; }
 .bn { font-size: 22px; font-weight: 500; }
 .br { font-size: 12px; color: var(--mute); font-variant-numeric: tabular-nums; }
 .bs { font-size: 12px; color: var(--mute); min-height: 1.3em; font-variant-numeric: tabular-nums; }
+.bt { display: block; font-size: 11px; color: var(--mute); line-height: 1.35; }
+.bx .tb { position: absolute; right: 2px; bottom: 2px; width: 34px; height: 34px; color: var(--mute); font-size: 15px; }
 .bx .rs { position: absolute; top: 2px; right: 2px; width: 34px; height: 34px; color: var(--mute); font-size: 16px; }
 .note { color: var(--mute); font-size: 12px; margin-top: 14px; }
 
 .top { display: flex; justify-content: space-between; align-items: center; color: var(--mute); font-size: 14px; min-height: 44px; font-variant-numeric: tabular-nums; }
+.tc { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
+.tc small { font-size: 12px; }
 .x { width: 44px; height: 44px; font-size: 20px; text-align: left; color: var(--fg); }
 .study { display: flex; flex-direction: column; min-height: calc(100svh - 40px); }
 .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 12px 0; min-width: 0; }
 .no { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
-.word { font-weight: 500; line-height: 1.2; max-width: 100%; word-break: keep-all; cursor: pointer; }
-.ex { color: var(--mute); font-size: 17px; max-width: 24em; margin-top: 8px; }
-.rev { width: 100%; display: flex; flex-direction: column; gap: 4px; }
-.rev .r { font-size: 24px; height: 36px; line-height: 36px; }
-.rev .m { font-size: 19px; height: 30px; line-height: 30px; color: var(--mute); }
+.word { font-weight: 500; line-height: 1.2; max-width: 100%; word-break: keep-all; cursor: pointer; color: var(--kc, var(--fg)); }
+.card { background: var(--card); border-radius: 16px; padding: 14px 12px 16px; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+.card .r { font-size: 22px; height: 34px; line-height: 34px; }
+.card .m { font-size: 19px; height: 30px; line-height: 30px; color: var(--mute); }
+.ex { color: var(--mute); font-size: 17px; max-width: 24em; margin-top: 44px; }
 .k { cursor: pointer; }
 .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.btns button { min-height: 60px; border: 1px solid var(--line); border-radius: 10px; font-size: 17px; }
+.btns button { min-height: 60px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; font-size: 17px; }
 .btns button.yes { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .fin { min-height: 60svh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px; text-align: center; }
 .fin .big { font-size: 32px; font-weight: 700; }
@@ -127,8 +140,13 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 
   /* ---------- 상태 저장 ---------- */
   var LS = "n1words-v1";
-  function fresh() { return { v: 1, t: 0, done: {}, ses: {}, last: "" }; }
-  function norm(s) { var f = fresh(); if (!s || typeof s !== "object") return f; f.t = +s.t || 0; f.done = mig(s.done); f.ses = mig(s.ses); f.last = typeof s.last === "string" ? s.last : ""; return f; }
+  function fresh() { return { v: 1, t: 0, done: {}, ses: {}, last: "", kc: "", tm: {} }; }
+  function norm(s) {
+    var f = fresh(); if (!s || typeof s !== "object") return f;
+    f.t = +s.t || 0; f.done = mig(s.done); f.ses = mig(s.ses); f.last = typeof s.last === "string" ? s.last : "";
+    f.kc = typeof s.kc === "string" ? s.kc : ""; f.tm = s.tm && typeof s.tm === "object" ? s.tm : {};
+    return f;
+  }
   var S = fresh();
   try { var raw = localStorage.getItem(LS); if (raw) S = norm(JSON.parse(raw)); } catch (e) {}
   var sync = "local", dbDoc = null, saving = false, dirty = false, timer = null;
@@ -166,13 +184,23 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     for (var i = 0; i < s.length; i++) { var c = s[i]; o += KO[c] ? '<span class="k" data-k="' + c + '">' + c + "</span>" : esc(c); }
     return o;
   }
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function fmt(ms) {
+    var s = Math.floor((ms || 0) / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    return h ? h + ":" + pad(m) + ":" + pad(s % 60) : m + ":" + pad(s % 60);
+  }
+  function applyColor() {
+    try { var st = document.documentElement.style; if (S.kc) st.setProperty("--kc", S.kc); else st.removeProperty("--kc"); } catch (e) {}
+  }
+  var SWATCH = ["", "#D6453D", "#2F6FDE", "#1E9E63", "#E07B00", "#8A4FD6"];
   function speak(t) {
     try { if (!window.speechSynthesis) return; var u = new SpeechSynthesisUtterance(t); u.lang = "ja-JP"; u.rate = 0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {}
   }
 
   /* ---------- 화면 ---------- */
   var finInfo = { pass: 1 };
-  var view = "home", R = 0, showR = false, showM = false, sheet = null;
+  var view = "home", R = 0, showR = false, showM = false, sheet = null, timeOpen = 0;
+  var lastAct = Date.now(), lastTick = Date.now(), tickN = 0;
   var app = document.getElementById("app");
 
   function vHome() {
@@ -181,26 +209,34 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     if (!curN) for (var r1 = 1; r1 <= RL.length; r1++) if (S.ses[K(r1)]) { curN = r1; break; }
     if (!curN) { curN = RL.length; for (var r0 = 1; r0 <= RL.length; r0++) if (!S.done[K(r0)]) { curN = r0; break; } }
     for (var r2 = 1; r2 <= RL.length; r2++) {
-      var g = RL[r2 - 1], ss = S.ses[K(r2)], st = "";
-      if (ss) st = (ss.pass > 1 ? ss.pass + "巡 " : "") + ss.i + "/" + ss.q.length;
+      var g = RL[r2 - 1], ss = S.ses[K(r2)], st = "", tm = S.tm[K(r2)];
+      if (timeOpen === r2) {
+        st = '<span class="bt">累計 ' + fmt((tm ? tm.tot : 0) + (ss ? ss.ms || 0 : 0)) + "</span>" +
+          (tm && tm.runs && tm.runs.length ? tm.runs.slice(-2).map(function (ms) { return '<span class="bt">完了 ' + fmt(ms) + "</span>"; }).join("") : "");
+      }
+      else if (ss) st = (ss.pass > 1 ? ss.pass + "巡 " : "") + ss.i + "/" + ss.q.length;
       else if (S.done[K(r2)]) st = "✓";
       boxes += '<div class="bx' + (r2 === curN ? " cur" : "") + (S.done[K(r2)] && !ss ? " dn" : "") + '"><button class="bb" data-a="start" data-v="' + r2 + '"><span class="br">' + g[0] + "–" + g[1] + '</span><span class="bn">' + r2 + '周目</span><span class="bs">' + st + "</span></button>" +
-        (ss ? '<button class="rs" data-a="reset" data-v="' + r2 + '" aria-label="' + r2 + '周目 最初から">↺</button>' : "") + "</div>";
+        (ss ? '<button class="rs" data-a="reset" data-v="' + r2 + '" aria-label="' + r2 + '周目 最初から">↺</button>' : "") +
+        '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + r2 + '周目 勉強時間">⏱</button></div>';
     }
     var tip = sync === "ok" ? "同期済み" : sync === "err" ? "同期失敗・この端末に保存" : "この端末に保存";
-    return '<div class="title">N1単語 ' + N + '</div><div class="car" id="car">' + boxes + '</div><div class="note">' + tip + "</div>";
+    var sw = SWATCH.map(function (v) {
+      return '<button class="swb' + (S.kc === v ? " on" : "") + '" data-a="kc" data-v="' + v + '" style="background:' + (v || "var(--fg)") + '" aria-label="漢字の色"></button>';
+    }).join("") + '<label class="swb cust' + (S.kc && SWATCH.indexOf(S.kc) < 0 ? " on" : "") + '"><input type="color" data-a="kcol" value="' + (S.kc || "#111111") + '" aria-label="漢字の色を選ぶ"></label>';
+    return '<div class="brand">회독JLPT</div><div class="title">N1単語 ' + N + '</div><div class="car" id="car">' + boxes + '</div>' +
+      '<div class="set"><span class="sl">漢字の色</span><div class="sw">' + sw + '</div></div><div class="note">' + tip + "</div>";
   }
   function wsize(w) { var len = Math.max(1, w.length), cap = len <= 3 ? 72 : len <= 5 ? 60 : 48; return "min(" + cap + "px, " + (76 / len).toFixed(1) + "vw)"; }
   function vStudy() {
     var ss = S.ses[K(R)], idx = ss.q[ss.i], x = W[idx];
-    return '<div class="study"><div class="top"><button class="x" data-a="home" aria-label="목록">✕</button><span>' + R + "周目" + (ss.pass > 1 ? " · " + ss.pass + "巡目" : "") + "</span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
-      '<div class="stage"><div class="no">' + (idx + 1) + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div>' +
-      '<div class="rev"><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kspan(x[3]) + "</div></div>" +
+    return '<div class="study"><div class="top"><button class="x" data-a="home" aria-label="목록">✕</button><span class="tc"><span>' + R + "周目" + (ss.pass > 1 ? " · " + ss.pass + "巡目" : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
+      '<div class="stage"><div class="no">' + (idx + 1) + '</div><div class="card"><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kspan(x[3]) + "</div></div>" +
       '<div class="btns"><button data-a="m">意味</button><button data-a="r">ひらがな</button><button data-a="no">知らない</button><button class="yes" data-a="yes">知ってる</button></div></div>';
   }
   function vFin() {
     var nx = R < RL.length ? R + 1 : 0;
-    return '<div class="fin"><div class="big">' + R + "周目 完了</div><div class=\"fsub\">" + RL[R - 1][0] + "–" + RL[R - 1][1] + (finInfo.pass > 1 ? " · " + finInfo.pass + "巡" : "") + "</div>" + (nx ? '<button data-a="start" data-v="' + nx + '">' + nx + "周目 開始</button>" : "") + '<button data-a="home">一覧</button></div>';
+    return '<div class="fin"><div class="big">' + R + "周目 完了</div><div class=\"fsub\">" + RL[R - 1][0] + "–" + RL[R - 1][1] + (finInfo.pass > 1 ? " · " + finInfo.pass + "巡" : "") + " · " + fmt(finInfo.ms) + "</div>" + (nx ? '<button data-a="start" data-v="' + nx + '">' + nx + "周目 開始</button>" : "") + '<button data-a="home">一覧</button></div>';
   }
   function vSheet() {
     var c = sheet, ds = ST[c], ko = KO[c] || "";
@@ -217,6 +253,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       (list.length > 12 ? '<div class="cr">他' + (list.length - 12) + "語</div>" : "") + '<div class="cr">筆順: KanjiVG (CC BY-SA 3.0)</div></div></div>';
   }
   function render() {
+    applyColor();
     var c0 = document.getElementById("car"), keep = view === "home" && c0 ? c0.scrollLeft : null;
     app.innerHTML = (view === "home" ? vHome() : view === "study" ? vStudy() : vFin()) + (sheet ? vSheet() : "");
     if (view === "home") {
@@ -250,6 +287,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function start(r) {
     R = r; showR = showM = false; sheet = null; S.last = K(r);
     if (!S.ses[K(r)]) { var g = RL[r - 1], q = []; for (var i = g[0] - 1; i < g[1]; i++) q.push(i); S.ses[K(r)] = { pass: 1, q: q, i: 0, unk: [] }; save(); }
+    lastAct = Date.now(); lastTick = Date.now();
     view = "study"; render(); window.scrollTo(0, 0); speakCur();
   }
   function advance(known) {
@@ -258,7 +296,11 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     ss.i++; showR = showM = false;
     if (ss.i >= ss.q.length) {
       if (ss.unk.length) { ss.q = shuffle(ss.unk); ss.unk = []; ss.pass++; ss.i = 0; }
-      else { finInfo = { pass: ss.pass }; S.done[K(R)] = true; delete S.ses[K(R)]; save(); view = "fin"; render(); return; }
+      else {
+        var tm = S.tm[K(R)] || (S.tm[K(R)] = { tot: 0, runs: [] });
+        tm.tot += ss.ms || 0; tm.runs.push(ss.ms || 0);
+        finInfo = { pass: ss.pass, ms: ss.ms || 0 }; S.done[K(R)] = true; delete S.ses[K(R)]; save(); view = "fin"; render(); return;
+      }
     }
     save(); render(); speakCur();
   }
@@ -271,7 +313,13 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     if (a === "close") { if (el.classList.contains("sheet") && e.target !== el) return; sheet = null; render(); }
     else if (a === "play") playKanji();
     else if (a === "start") start(+v);
-    else if (a === "reset") { delete S.ses[K(+v)]; save(); render(); }
+    else if (a === "reset") {
+      var ss0 = S.ses[K(+v)];
+      if (ss0 && ss0.ms) { var t0 = S.tm[K(+v)] || (S.tm[K(+v)] = { tot: 0, runs: [] }); t0.tot += ss0.ms; }
+      delete S.ses[K(+v)]; save(); render();
+    }
+    else if (a === "time") { timeOpen = timeOpen === +v ? 0 : +v; render(); }
+    else if (a === "kc") { S.kc = v; save(); render(); }
     else if (a === "home") { view = "home"; sheet = null; render(); }
     else if (a === "say") speakCur();
     else if (a === "m") { showM = !showM; render(); }
@@ -286,6 +334,20 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     else if (e.key === "3") advance(false);
     else if (e.key === "4") advance(true);
   });
+
+  app.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t && t.getAttribute && t.getAttribute("data-a") === "kcol") { S.kc = t.value; save(); render(); }
+  });
+  ["click", "keydown", "touchstart"].forEach(function (ev) { document.addEventListener(ev, function () { lastAct = Date.now(); }, true); });
+  setInterval(function () {
+    var now = Date.now(), dt = Math.min(now - lastTick, 2000); lastTick = now;
+    if (view !== "study" || document.visibilityState !== "visible" || now - lastAct > 120000) return;
+    var ss = S.ses[K(R)]; if (!ss) return;
+    ss.ms = (ss.ms || 0) + dt;
+    var el = document.getElementById("tm"); if (el) el.textContent = fmt(ss.ms);
+    if (++tickN % 10 === 0) saveLocal();
+  }, 1000);
 
   render();
   initCloud();
