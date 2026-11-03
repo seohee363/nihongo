@@ -68,12 +68,14 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .bx .rs { position: absolute; top: 2px; right: 2px; width: 34px; height: 34px; color: var(--mute); font-size: 16px; }
 .note { color: var(--mute); font-size: 12px; margin-top: 14px; }
 
-.top { display: flex; justify-content: space-between; align-items: center; color: var(--mute); font-size: 14px; min-height: 44px; font-variant-numeric: tabular-nums; }
+.top { display: flex; justify-content: space-between; align-items: center; background: #111; color: #fff; font-size: 14px; min-height: 52px; font-variant-numeric: tabular-nums;
+  margin: -12px calc(-1 * max(16px, env(safe-area-inset-right, 0px))) 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px)); }
 .tl { display: flex; align-items: center; gap: 2px; min-width: 96px; }
 .top > span:last-child { min-width: 96px; text-align: right; }
 .tc { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
 .tc small { font-size: 12px; }
-.x { width: 44px; height: 44px; font-size: 20px; text-align: left; color: var(--fg); }
+.x { width: 44px; height: 44px; font-size: 20px; text-align: center; color: #fff; }
 .study { display: flex; flex-direction: column; min-height: calc(100svh - 40px); }
 .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 12px; padding: 6svh 0 12px; min-width: 0; }
 .no { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
