@@ -117,6 +117,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .steps .p0 { stroke: var(--faint); }
 .steps .p1 { stroke: var(--fg); }
 .anim { cursor: pointer; }
+.ex { cursor: pointer; }
 .oth { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 4px; margin-top: 4px; }
 .ent { display: inline-flex; align-items: flex-end; gap: 6px; min-width: 0; }
 .ent:not(:last-child)::after { content: ","; color: var(--mute); margin-left: 1px; }
@@ -239,8 +240,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       var at = ex.indexOf(sub);
       if (at >= 0) { a = at; b = at + len; break; }
     }
-    if (a < 0) return kspan(ex);
-    return kspan(ex.slice(0, a)) + '<span class="ul">' + kspan(ex.slice(a, b)) + "</span>" + kspan(ex.slice(b));
+    if (a < 0) return esc(ex);
+    return esc(ex.slice(0, a)) + '<span class="ul">' + esc(ex.slice(a, b)) + "</span>" + esc(ex.slice(b));
   }
   function durText(ms) {
     var min = Math.floor((ms || 0) / 60000), h = Math.floor(min / 60), m = min % 60, ko = S.lang === "ko";
@@ -306,7 +307,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function vStudy() {
     var ss = S.ses[K(R)], idx = ss.q[ss.i], x = W[idx];
     return '<div class="study"><div class="top"><span class="tl"><button class="x" data-a="home" aria-label="' + L().list + '">✕</button></span><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
-      '<div class="stage"><div class="card"><span class="no">' + (idx + 1) + '</span><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex">' + kex(x[3], x[0]) + "</div></div>" +
+      '<div class="stage"><div class="card"><span class="no">' + (idx + 1) + '</span><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="ex" data-a="ex">' + kex(x[3], x[0]) + "</div></div>" +
       '<div class="btns"><button data-a="m">' + L().meaning + '</button><button data-a="r">' + L().hira + '</button><button data-a="no">' + L().no + '</button><button class="yes" data-a="yes">' + L().yes + '</button></div></div>';
   }
   function vFin() {
@@ -404,6 +405,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     else if (a === "kc") { S.kc = v; save(); render(); }
     else if (a === "home") { view = "home"; sheet = null; render(); }
     else if (a === "say") speakCur();
+    else if (a === "ex") { var both = showR && showM; showR = showM = !both; render(); }
     else if (a === "m") { showM = !showM; render(); }
     else if (a === "r") { showR = !showR; render(); }
     else if (a === "yes") advance(true);
