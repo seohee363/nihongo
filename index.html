@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style>
-<title>회독JLPT</title>
+<title>JLPT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -287,7 +287,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
                 '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().time + '">' + ICON_CLOCK + '</button></div>';
     }
     var tip = sync === "err" ? L().syncErr : "";
-    return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">' + L().sub + " " + N + '</div></div><button class="gear" data-a="settings" aria-label="' + L().set + '">' + ICON_GEAR + '</button></div>' +
+    return '<div class="hd"><div><div class="brand">JLPT</div></div><button class="gear" data-a="settings" aria-label="' + L().set + '">' + ICON_GEAR + '</button></div>' +
       '<div class="car" id="car">' + boxes + "</div>" + (tip ? '<div class="note">' + tip + "</div>" : "");
   }
   function vTime() {
