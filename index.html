@@ -44,6 +44,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .sheet.pop .kc { border-radius: 16px; max-width: 360px; }
 .set { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 8px; padding: 0 2px; }
 .set .sl { color: var(--mute); font-size: 14px; }
+.set.gap { margin-top: 28px; }
 .sw { display: flex; gap: 12px; align-items: center; }
 .lg { display: flex; gap: 8px; }
 .lgb { min-height: 40px; padding: 0 18px; border-radius: 10px; background: var(--bg); color: var(--fg); font-size: 15px; }
@@ -303,8 +304,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       return '<button class="swb' + (S.kc === v ? " on" : "") + '" data-a="kc" data-v="' + v + '" style="background:' + (v || "var(--fg)") + '" aria-label="' + L().kcolor + '"></button>';
     }).join("") + '<label class="swb cust' + (S.kc && SWATCH.indexOf(S.kc) < 0 ? " on" : "") + '"><input type="color" data-a="kcol" value="' + (S.kc || "#111111") + '" aria-label="' + L().pick + '"></label>';
     return '<div class="sheet pop" data-a="sclose"><div class="kc" role="dialog" aria-label="' + L().set + '"><div class="kh"><div class="ko">' + L().set + '</div><button class="cl" data-a="sclose" aria-label="' + L().close + '">✕</button></div>' +
-      '<div class="set"><span class="sl">' + L().kcolor + '</span><div class="sw">' + sw + "</div></div>" +
-      '<div class="set"><span class="sl">' + L().lang + '</span><div class="lg"><button class="lgb' + (S.lang !== "ko" ? " on" : "") + '" data-a="lang" data-v="ja">日本語</button><button class="lgb' + (S.lang === "ko" ? " on" : "") + '" data-a="lang" data-v="ko">한국어</button></div></div></div></div>';
+      '<div class="set"><span class="sl">' + L().lang + '</span><div class="lg"><button class="lgb' + (S.lang !== "ko" ? " on" : "") + '" data-a="lang" data-v="ja">日本語</button><button class="lgb' + (S.lang === "ko" ? " on" : "") + '" data-a="lang" data-v="ko">한국어</button></div></div>' +
+      '<div class="set gap"><span class="sl">' + L().kcolor + '</span><div class="sw">' + sw + "</div></div></div></div>";
   }
   function wsize(w) { var len = Math.max(1, w.length), cap = len <= 3 ? 72 : len <= 5 ? 60 : 48; return "min(" + cap + "px, " + (76 / len).toFixed(1) + "vw)"; }
   function vStudy() {
