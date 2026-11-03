@@ -61,6 +61,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .bn { font-size: 22px; font-weight: 500; }
 .br { font-size: 12px; color: var(--mute); font-variant-numeric: tabular-nums; }
 .bs { font-size: 12px; color: var(--mute); min-height: 1.3em; font-variant-numeric: tabular-nums; }
+.gear svg { display: block; width: 24px; height: 24px; margin: auto; }
+.bx .tb svg { display: block; width: 17px; height: 17px; margin: auto; }
 .bt { display: block; font-size: 11px; color: var(--mute); line-height: 1.35; }
 .bx .tb { position: absolute; right: 2px; bottom: 2px; width: 34px; height: 34px; color: var(--mute); font-size: 15px; }
 .bx .rs { position: absolute; top: 2px; right: 2px; width: 34px; height: 34px; color: var(--mute); font-size: 16px; }
@@ -216,6 +218,9 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     try { var st = document.documentElement.style; if (S.kc) st.setProperty("--kc", S.kc); else st.removeProperty("--kc"); } catch (e) {}
   }
   var SWATCH = ["", "#D6453D", "#2F6FDE", "#1E9E63", "#E07B00", "#8A4FD6"];
+  var ICON_GEAR = '<svg viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M256 111a145 145 0 1 0 .01 0zM256 154a102 102 0 1 1-.01 0z"/>' +
+    [0, 45, 90, 135, 180, 225, 270, 315].map(function (a) { return '<rect x="222" y="68" width="68" height="74" rx="5" transform="rotate(' + a + " 256 256)\"/>"; }).join("") + "</svg>";
+  var ICON_CLOCK = '<svg viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="32" aria-hidden="true"><path d="M476 256A220 220 0 1 1 436 130L492 150"/><path d="M392 150H492V58"/><path d="M256 92V256L164 348"/></svg>';
   function speak(t) {
     try { if (!window.speechSynthesis) return; var u = new SpeechSynthesisUtterance(t); u.lang = "ja-JP"; u.rate = 0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {}
   }
@@ -241,10 +246,10 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       else if (S.done[K(r2)]) st = "✓";
       boxes += '<div class="bx' + (r2 === curN ? " cur" : "") + (S.done[K(r2)] && !ss ? " dn" : "") + '"><button class="bb" data-a="start" data-v="' + r2 + '"><span class="br">' + g[0] + "–" + g[1] + '</span><span class="bn">' + rl(r2) + '</span><span class="bs">' + st + "</span></button>" +
         (ss ? '<button class="rs" data-a="reset" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().reset + '">↺</button>' : "") +
-        '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().time + '">⏱</button></div>';
+        '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().time + '">' + ICON_CLOCK + '</button></div>';
     }
     var tip = sync === "err" ? L().syncErr : "";
-    return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">' + L().sub + " " + N + '</div></div><button class="gear" data-a="settings" aria-label="' + L().set + '">⚙</button></div>' +
+    return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">' + L().sub + " " + N + '</div></div><button class="gear" data-a="settings" aria-label="' + L().set + '">' + ICON_GEAR + '</button></div>' +
       '<div class="car" id="car">' + boxes + "</div>" + (tip ? '<div class="note">' + tip + "</div>" : "");
   }
   function vSettings() {
