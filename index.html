@@ -9,7 +9,7 @@
 <title>JLPT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: plain list of rounds; one centered word card with four buttons at the bottom; kanji sheet slides over. */
 :root {
@@ -88,8 +88,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .ex { color: var(--mute); font-size: 17px; max-width: 24em; }
 .k { cursor: pointer; }
 .ul { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; text-decoration-color: color-mix(in srgb, var(--kc, var(--fg)) 32%, transparent); }
-.tl2 { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: 16px; font-variant-numeric: tabular-nums; }
-.tl2 li.on { font-weight: 700; }
+.tl2 { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: 16px; font-weight: 300; font-variant-numeric: tabular-nums; }
+.tl2 li.on { font-weight: 300; }
 .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .btns button { min-height: 60px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; font-size: 17px; }
 .btns button.yes { background: var(--fg); color: var(--bg); border-color: var(--fg); }
@@ -263,7 +263,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   var SWATCH = ["", "#D6453D", "#2F6FDE", "#1E9E63", "#E07B00", "#8A4FD6"];
   var ICON_GEAR = '<svg viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M256 111a145 145 0 1 0 .01 0zM256 154a102 102 0 1 1-.01 0z"/>' +
     [0, 45, 90, 135, 180, 225, 270, 315].map(function (a) { return '<rect x="222" y="68" width="68" height="74" rx="5" transform="rotate(' + a + " 256 256)\"/>"; }).join("") + "</svg>";
-  var ICON_CLOCK = '<svg viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="32" aria-hidden="true"><path d="M476 256A220 220 0 1 1 436 130L492 150"/><path d="M392 150H492V58"/><path d="M256 92V256L164 348"/></svg>';
+  var ICON_CLOCK = '<svg viewBox="0 0 512 512" aria-hidden="true"><circle cx="256" cy="256" r="213" fill="currentColor"/><path d="M257 150V261L341 303" fill="none" style="stroke:var(--card)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function speak(t) {
     try { if (!window.speechSynthesis) return; var u = new SpeechSynthesisUtterance(t); u.lang = "ja-JP"; u.rate = 0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {}
   }
