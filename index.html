@@ -73,14 +73,17 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .bx .rs { position: absolute; top: 2px; right: 2px; width: 34px; height: 34px; color: var(--mute); font-size: 16px; }
 .note { color: var(--mute); font-size: 12px; margin-top: 14px; }
 
-.top { display: flex; justify-content: space-between; align-items: center; background: #111; color: #fff; font-size: 14px; min-height: 52px; font-variant-numeric: tabular-nums;
+.top { display: flex; justify-content: space-between; align-items: center; background: var(--bg); color: var(--fg); border: solid var(--fg); border-width: 1px 0; font-size: 14px; min-height: 68px; font-variant-numeric: tabular-nums;
   margin: -12px calc(-1 * max(16px, env(safe-area-inset-right, 0px))) 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
   padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px)); }
 .tl { display: flex; align-items: center; gap: 2px; min-width: 96px; }
 .top > span:last-child { min-width: 96px; text-align: right; }
 .tc { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
-.tc small { font-size: 12px; }
-.x { width: 44px; height: 44px; font-size: 16px; text-align: center; color: #fff; }
+#tm { padding-left: 8px; }
+.top .x { margin-right: -18px; }
+.tc > span { font-size: 17px; }
+.tc small { font-size: 12px; color: color-mix(in srgb, var(--kc, var(--fg)) 80%, transparent); }
+.x { width: 44px; height: 44px; font-size: 16px; text-align: center; color: var(--fg); }
 .study { display: flex; flex-direction: column; min-height: calc(100svh - 40px); }
 .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 12px; padding: 10svh 0 12px; min-width: 0; }
 .no { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
@@ -177,15 +180,15 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 
   /* ---------- 표시 언어 (설정에서 한국어/일본어 선택) ---------- */
   var I18N = {
-    ja: { round: "周目", dd: "試験日", ddClear: "消す", sub: "N1単語", set: "設定", kcolor: "漢字の色", pick: "漢字の色を選ぶ", lang: "言語", close: "閉じる", list: "一覧",
+    ja: { round: "章", run: "周目", runTime: "時間", dd: "試験日", ddClear: "消す", sub: "N1単語", set: "設定", kcolor: "漢字の色", pick: "漢字の色を選ぶ", lang: "言語", close: "閉じる", list: "一覧",
       synced: "同期済み", syncErr: "同期失敗・この端末に保存", local: "この端末に保存", meaning: "意味", hira: "ひらがな", no: "知らない", yes: "知ってる",
       done: "完了", start: "開始", total: "累計", reset: "最初から", time: "勉強時間", stroke: "画", order: "筆順", anim: "筆順アニメーション", replay: "筆順をもう一度",
-      tspent: "所要時間", hr: "時間", mn: "分", under1: "1分未満", none: "記録なし",
+      tspent: "所要時間", hr: "時間", mn: "分", sc: "秒", under1: "1分未満", none: "記録なし",
       more: function (n) { return "他" + n + "語"; } },
-    ko: { round: "회독", dd: "디데이", ddClear: "지우기", sub: "N1 단어", set: "설정", kcolor: "한자 색상", pick: "한자 색상 고르기", lang: "언어", close: "닫기", list: "목록",
+    ko: { round: "장", run: "회독", runTime: "시간", dd: "디데이", ddClear: "지우기", sub: "N1 단어", set: "설정", kcolor: "한자 색상", pick: "한자 색상 고르기", lang: "언어", close: "닫기", list: "목록",
       synced: "동기화됨", syncErr: "동기화 실패 · 이 기기에 저장됨", local: "이 기기에 저장됨", meaning: "뜻", hira: "히라가나", no: "모름", yes: "앎",
       done: "완료", start: "시작", total: "누적", reset: "처음부터", time: "공부 시간", stroke: "획", order: "획순", anim: "획순 애니메이션", replay: "획순 다시 재생",
-      tspent: "소요시간", hr: "시간", mn: "분", under1: "1분 미만", none: "기록 없음",
+      tspent: "소요시간", hr: "시간", mn: "분", sc: "초", under1: "1분 미만", none: "기록 없음",
       more: function (n) { return "외 " + n + "개"; } }
   };
   function L() { return I18N[S.lang === "ko" ? "ko" : "ja"]; }
@@ -254,8 +257,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   }
   function durText(ms) {
     var min = Math.floor((ms || 0) / 60000), h = Math.floor(min / 60), m = min % 60, ko = S.lang === "ko";
-    if (min < 1) return L().under1;
-    return (h ? h + L().hr + (ko ? " " : "") : "") + (m || !h ? m + L().mn : "");
+    var sec = Math.floor((ms || 0) / 1000) % 60, g = ko ? " " : "";
+    return pad(h) + L().hr + g + pad(m) + L().mn + g + pad(sec) + L().sc;
   }
   /* 디데이: 설정한 날짜까지 남은 날 수 (오늘 = D-DAY, 지나면 D+n) */
   function ddayText() {
@@ -305,12 +308,12 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       '<div class="car" id="car">' + boxes + "</div>" + (tip ? '<div class="note">' + tip + "</div>" : "");
   }
   function vTime() {
-    var rows = "";
-    for (var r = 1; r <= RL.length; r++) {
-      var tm = S.tm[K(r)], ss = S.ses[K(r)], ms = (tm ? tm.tot : 0) + (ss ? ss.ms || 0 : 0);
-      if (ms > 0) rows += "<li" + (r === timeOpen ? ' class="on"' : "") + ">" + rl(r) + " " + L().tspent + ": " + durText(ms) + "</li>";
-    }
-    return '<div class="sheet pop" data-a="tclose"><div class="kc" role="dialog" aria-label="' + L().time + '"><div class="kh"><div class="ko">' + L().time + '</div><button class="cl" data-a="tclose" aria-label="' + L().close + '">✕</button></div>' +
+    /* 장 하나의 n회독 시간: 그 장의 단어를 처음부터 전부 '앎'으로 넘길 때까지 걸린 시간 (진행 중이면 마지막 줄에 지금까지의 시간) */
+    var rows = "", tm = S.tm[K(timeOpen)], runs = tm && tm.runs ? tm.runs : [], ss = S.ses[K(timeOpen)];
+    function runRow(n, ms) { return "<li>" + n + L().run + " " + L().runTime + ": " + durText(ms) + "</li>"; }
+    runs.forEach(function (ms, i) { rows += runRow(i + 1, ms); });
+    if (ss && ss.ms > 0) rows += runRow(runs.length + 1, ss.ms);
+    return '<div class="sheet pop" data-a="tclose"><div class="kc" role="dialog" aria-label="' + L().time + '"><div class="kh"><div class="ko">' + rl(timeOpen) + " " + L().time + '</div><button class="cl" data-a="tclose" aria-label="' + L().close + '">✕</button></div>' +
       (rows ? '<ul class="tl2">' + rows + "</ul>" : '<div class="sub">' + L().none + "</div>") + "</div></div>";
   }
   function vSettings() {
@@ -326,7 +329,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function wsize(w) { var len = Math.max(1, w.length), cap = len <= 3 ? 72 : len <= 5 ? 60 : 48; return "min(" + cap + "px, " + (76 / len).toFixed(1) + "vw)"; }
   function vStudy() {
     var ss = S.ses[K(R)], idx = ss.q[ss.i], x = W[idx];
-    return '<div class="study"><div class="top"><span class="tl"><button class="x" data-a="home" aria-label="' + L().list + '">✕</button></span><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small id="tm">' + fmt(ss.ms) + "</small></span><span>" + (ss.i + 1) + "/" + ss.q.length + "</span></div>" +
+    return '<div class="study"><div class="top"><span class="tl" id="tm">' + fmt(ss.ms) + '</span><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small>' + (ss.i + 1) + "/" + ss.q.length + '</small></span><span><button class="x" data-a="home" aria-label="' + L().list + '">✕</button></span></div>' +
       '<div class="stage"><div class="card"><span class="no">' + (idx + 1) + '</span><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="exw" data-a="ex"><div class="exr">' + (showE ? esc(SE[idx][0]) : "") + '</div><div class="ex">' + kex(x[3], x[0]) + '</div><div class="exm">' + (showE ? esc(SE[idx][1]) : "") + "</div></div></div>" +
       '<div class="btns"><button data-a="m">' + L().meaning + '</button><button data-a="r">' + L().hira + '</button><button data-a="no">' + L().no + '</button><button class="yes" data-a="yes">' + L().yes + '</button></div></div>';
   }
@@ -399,7 +402,11 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     if (!known && ss.unk.indexOf(idx) < 0) ss.unk.push(idx);
     ss.i++; showR = showM = showE = false;
     if (ss.i >= ss.q.length) {
-      if (ss.unk.length) { ss.q = shuffle(ss.unk); ss.unk = []; ss.pass++; ss.i = 0; }
+      if (ss.unk.length) {
+        ss.q = shuffle(ss.unk); ss.unk = []; ss.pass++; ss.i = 0;
+        /* 방금 본 카드가 새 바퀴의 첫 카드로 바로 이어지지 않게 */
+        if (ss.q.length > 1 && ss.q[0] === idx) { var sw = 1 + Math.floor(Math.random() * (ss.q.length - 1)); ss.q[0] = ss.q[sw]; ss.q[sw] = idx; }
+      }
       else {
         var tm = S.tm[K(R)] || (S.tm[K(R)] = { tot: 0, runs: [] });
         tm.tot += ss.ms || 0; tm.runs.push(ss.ms || 0);
