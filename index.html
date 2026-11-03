@@ -16,8 +16,8 @@
   --bg: var(--t-bg, #F9F9F9);
   --kc: var(--t-kc, #111111);
   --card: #FFFFFF;
-  --fg: #111111;
-  --mute: #767676;
+  --fg: var(--t-fg, #111111);
+  --mute: var(--t-mute, #767676);
   --line: #DCDCDC;
   --faint: #BDBDBD;
   --f: "Noto Sans JP", "Noto Sans KR", "Hiragino Sans", "Yu Gothic", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
@@ -260,7 +260,28 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   }
   /* 테마: 한 줄(밝은 색 → 진한 색) = 한 테마. 가장 연한 색=배경, 가장 진한 색=한자, 4번째 색=위쪽 띠 */
   function rgb(h) { return [parseInt(h.substr(1, 2), 16) / 255, parseInt(h.substr(3, 2), 16) / 255, parseInt(h.substr(5, 2), 16) / 255]; }
-  function lum(h) { var c = rgb(h); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  function lum(h) {
+    var c = rgb(h).map(function (v) { return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function contrast(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  function mix(h, k) {
+    return "#" + rgb(h).map(function (v) { var n = Math.round(v * 255 * (1 - k)); return (n < 16 ? "0" : "") + n.toString(16); }).join("").toUpperCase();
+  }
+  function ensure(h, bg, min) {
+    for (var k = 0; k <= 0.9; k += 0.05) { var c = mix(h, k); if (contrast(c, bg) >= min) return c; }
+    return mix(h, 0.9);
+  }
+  /* 한 줄(밝음→진함)에서 역할별 색 고르기: 배경=연한 쪽(흰 카드와 구분되게), 강조=진한 쪽, 글자는 대비 확보 */
+  function themeColors(t) {
+    var n = t.length, bg = t[0];
+    for (var i = 0; i < n; i++) { if (lum(t[i]) <= 0.93) { bg = t[i]; break; } }
+    var band = t[n > 6 ? 8 : 4], dark = t[n - 1];
+    return {
+      bg: bg, band: band, bandfg: contrast(band, "#FFFFFF") >= contrast(band, "#1A1A1A") ? "#FFFFFF" : "#1A1A1A",
+      kc: ensure(dark, "#FFFFFF", 4.5), kcd: t[1], fg: mix(dark, 0.78), mute: ensure(dark, bg, 4.6)
+    };
+  }
   function hsl(h) {
     var c = rgb(h), r = c[0], g = c[1], b = c[2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, hh = 0;
     if (d) { if (mx === r) hh = ((g - b) / d) % 6; else if (mx === g) hh = (b - r) / d + 2; else hh = (r - g) / d + 4; hh *= 60; if (hh < 0) hh += 360; }
@@ -271,9 +292,10 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     .sort(function (a, b) { return a.k - b.k || a.i - b.i; }).map(function (o) { return o.i; });
   function applyColor() {
     try {
-      var st = document.documentElement.style, t = THEMES[S.theme] || THEMES[0], band = t[3];
-      st.setProperty("--t-bg", t[0]); st.setProperty("--t-kc", t[t.length - 1]); st.setProperty("--t-kcd", t[1]);
-      st.setProperty("--t-band", band); st.setProperty("--t-bandfg", lum(band) > 0.55 ? "#1A1A1A" : "#FFFFFF");
+      var st = document.documentElement.style, c = themeColors(THEMES[S.theme] || THEMES[0]);
+      st.setProperty("--t-bg", c.bg); st.setProperty("--t-kc", c.kc); st.setProperty("--t-kcd", c.kcd);
+      st.setProperty("--t-band", c.band); st.setProperty("--t-bandfg", c.bandfg);
+      st.setProperty("--t-fg", c.fg); st.setProperty("--t-mute", c.mute);
     } catch (e) {}
   }
   var ICON_GEAR = '<svg viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M256 111a145 145 0 1 0 .01 0zM256 154a102 102 0 1 1-.01 0z"/>' +
@@ -316,8 +338,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   }
   function vSettings() {
     var sw = THEME_ORDER.map(function (i) {
-      var t = THEMES[i];
-      return '<button class="swb' + (S.theme === i ? " on" : "") + '" data-a="theme" data-v="' + i + '" style="background:linear-gradient(135deg,' + t[0] + " 0 34%," + t[3] + " 34% 67%," + t[t.length - 1] + ' 67%)" aria-label="' + L().theme + " " + (i + 1) + '"></button>';
+      var t = THEMES[i], c = themeColors(t);
+      return '<button class="swb' + (S.theme === i ? " on" : "") + '" data-a="theme" data-v="' + i + '" style="background:linear-gradient(135deg,' + c.bg + " 0 34%," + c.band + " 34% 67%," + c.kc + ' 67%)" aria-label="' + L().theme + " " + (i + 1) + '"></button>';
     }).join("");
     return '<div class="sheet pop" data-a="sclose"><div class="kc" role="dialog" aria-label="' + L().set + '"><div class="kh"><div class="ko">' + L().set + '</div><button class="cl" data-a="sclose" aria-label="' + L().close + '">✕</button></div>' +
       '<div class="set"><span class="sl">' + L().theme + '</span><div class="sw">' + sw + "</div></div>" +
