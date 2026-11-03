@@ -250,8 +250,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
       else if (ss) st = (ss.pass > 1 ? passS(ss.pass) : "") + ss.i + "/" + ss.q.length;
       else if (S.done[K(r2)]) st = "✓";
       boxes += '<div class="bx' + (r2 === curN ? " cur" : "") + (S.done[K(r2)] && !ss ? " dn" : "") + '"><button class="bb" data-a="start" data-v="' + r2 + '"><span class="br">' + g[0] + "–" + g[1] + '</span><span class="bn">' + rl(r2) + '</span><span class="bs">' + st + "</span></button>" +
-        (ss ? '<button class="rs" data-a="reset" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().reset + '">↺</button>' : "") +
-        '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().time + '">' + ICON_CLOCK + '</button></div>';
+                '<button class="tb" data-a="time" data-v="' + r2 + '" aria-label="' + rl(r2) + " " + L().time + '">' + ICON_CLOCK + '</button></div>';
     }
     var tip = sync === "err" ? L().syncErr : "";
     return '<div class="hd"><div><div class="brand">회독JLPT</div><div class="title">' + L().sub + " " + N + '</div></div><button class="gear" data-a="settings" aria-label="' + L().set + '">' + ICON_GEAR + '</button></div>' +
@@ -324,7 +323,15 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 
   function start(r) {
     R = r; showR = showM = false; sheet = null; S.last = K(r);
-    if (!S.ses[K(r)]) { var g = RL[r - 1], q = []; for (var i = g[0] - 1; i < g[1]; i++) q.push(i); S.ses[K(r)] = { pass: 1, q: q, i: 0, unk: [] }; save(); }
+    /* 한 번에 하나의 회독만 진행: 다른 회독의 진행 상황은 초기화(걸린 시간은 누적에 보관) */
+    for (var key in S.ses) {
+      if (key === K(r)) continue;
+      var old = S.ses[key];
+      if (old && old.ms) { var t0 = S.tm[key] || (S.tm[key] = { tot: 0, runs: [] }); t0.tot += old.ms; }
+      delete S.ses[key];
+    }
+    if (!S.ses[K(r)]) { var g = RL[r - 1], q = []; for (var i = g[0] - 1; i < g[1]; i++) q.push(i); S.ses[K(r)] = { pass: 1, q: shuffle(q), i: 0, unk: [] }; }
+    save();
     lastAct = Date.now(); lastTick = Date.now();
     view = "study"; render(); window.scrollTo(0, 0); speakCur();
   }
@@ -351,11 +358,6 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     if (a === "close") { if (el.classList.contains("sheet") && e.target !== el) return; sheet = null; render(); }
     else if (a === "play") playKanji();
     else if (a === "start") start(+v);
-    else if (a === "reset") {
-      var ss0 = S.ses[K(+v)];
-      if (ss0 && ss0.ms) { var t0 = S.tm[K(+v)] || (S.tm[K(+v)] = { tot: 0, runs: [] }); t0.tot += ss0.ms; }
-      delete S.ses[K(+v)]; save(); render();
-    }
     else if (a === "lang") { S.lang = v === "ko" ? "ko" : "ja"; save(); render(); }
     else if (a === "settings") { settingsOpen = true; render(); }
     else if (a === "sclose") { if (el.classList.contains("sheet") && e.target !== el) return; settingsOpen = false; render(); }
