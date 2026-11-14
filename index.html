@@ -80,12 +80,13 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .top > span:last-child { min-width: 96px; text-align: right; }
 .tc { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
 #tm { padding-left: 8px; color: var(--mute); }
+.top { overflow-x: clip; }
 .top .x { margin-right: -18px; }
 .tc > span { font-size: 17px; }
 .tc small { font-size: 12px; color: color-mix(in srgb, var(--kc, var(--fg)) 80%, transparent); }
 .x { width: 44px; height: 44px; font-size: 16px; text-align: center; color: var(--fg); }
 .study { display: flex; flex-direction: column; min-height: calc(100svh - 40px); }
-.stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 12px; padding: 10svh 0 12px; min-width: 0; }
+.stage { flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 12px; padding: 10svh 0 12px; min-width: 0; }
 .no { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
 .word { font-weight: 400; line-height: 1.2; max-width: 100%; word-break: keep-all; cursor: pointer; color: var(--kc, var(--fg)); }
 .card .no { position: absolute; top: 12px; left: 14px; }
@@ -97,7 +98,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .ul { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; text-decoration-color: color-mix(in srgb, var(--kc, var(--fg)) 32%, transparent); }
 .tl2 { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: 16px; font-weight: 300; font-variant-numeric: tabular-nums; }
 .tl2 li.on { font-weight: 300; }
-.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 .btns button { min-height: 60px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; font-size: 17px; }
 .btns button.yes { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .fin { min-height: 60svh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px; text-align: center; }
@@ -125,7 +126,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .steps .p0 { stroke: var(--faint); }
 .steps .p1 { stroke: var(--fg); }
 .anim { cursor: pointer; }
-.exw { margin-top: 20px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+.exw { margin-top: 4px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
 .exr { font-size: 13px; color: var(--mute); height: 36px; display: flex; align-items: flex-end; justify-content: center; text-align: center; line-height: 1.3; }
 .exm { font-size: 14px; color: var(--mute); height: 40px; line-height: 1.4; text-align: center; }
 .oth { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 4px; margin-top: 4px; }
@@ -331,8 +332,8 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   function vStudy() {
     var ss = S.ses[K(R)], idx = ss.q[ss.i], x = W[idx];
     return '<div class="study"><div class="top"><span class="tl" id="tm">' + fmt(ss.ms) + '</span><span class="tc"><span>' + rl(R) + (ss.pass > 1 ? " · " + passN(ss.pass) : "") + '</span><small>' + (ss.i + 1) + "/" + ss.q.length + '</small></span><span><button class="x" data-a="home" aria-label="' + L().list + '">✕</button></span></div>' +
-      '<div class="stage"><div class="card"><span class="no">' + (idx + 1) + '</span><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" data-a="say" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="exw" data-a="ex"><div class="exr">' + (showE ? esc(SE[idx][0]) : "") + '</div><div class="ex">' + kex(x[3], x[0]) + '</div><div class="exm">' + (showE ? esc(SE[idx][1]) : "") + "</div></div></div>" +
-      '<div class="btns"><button data-a="m">' + L().meaning + '</button><button data-a="r">' + L().hira + '</button><button data-a="no">' + L().no + '</button><button class="yes" data-a="yes">' + L().yes + '</button></div></div>';
+      '<div class="stage"><div class="card" data-a="step"><span class="no">' + (idx + 1) + '</span><div class="r">' + (showR ? esc(x[1]) : "") + '</div><div class="word" style="font-size:' + wsize(x[0]) + '">' + kspan(x[0]) + '</div><div class="m">' + (showM ? esc(x[2]) : "") + '</div></div><div class="exw" data-a="ex"><div class="exr">' + (showE ? esc(SE[idx][0]) : "") + '</div><div class="ex">' + kex(x[3], x[0]) + '</div><div class="exm">' + (showE ? esc(SE[idx][1]) : "") + "</div></div></div>" +
+      '<div class="btns"><button data-a="no">' + L().no + '</button><button class="yes" data-a="yes">' + L().yes + '</button></div></div>';
   }
   function vFin() {
     var nx = R < RL.length ? R + 1 : 0;
@@ -438,6 +439,7 @@ button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
     else if (a === "tclose") { if (el.classList.contains("sheet") && e.target !== el) return; timeOpen = 0; render(); }
     else if (a === "kc") { S.kc = v; save(); render(); }
     else if (a === "home") { view = "home"; sheet = null; render(); }
+    else if (a === "step") { if (!showR) { showR = true; speakCur(); } else if (!showM) showM = true; else { showR = false; showM = false; } render(); }
     else if (a === "say") speakCur();
     else if (a === "ex") { showE = !showE; render(); }
     else if (a === "m") { showM = !showM; render(); }
